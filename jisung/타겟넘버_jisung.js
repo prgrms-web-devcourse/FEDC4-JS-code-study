@@ -17,7 +17,7 @@ function solution(numbers, target) {
 
   dfs(0, 0);
 
-  return answer;
+  return answer; // 정답
 }
 /*
 1. 알고리즘 or 자료구조 선택 이유
