@@ -12,10 +12,10 @@ function solution(begin, target, words) {
     // 정답
     if (word === target) {
       return stage;
-      // 방문했으면 패스 < 문제의 코드
-      if (visited) {
-        return;
-      }
+    }
+    // 방문했으면 패스 < 문제의 코드
+    if (visited) {
+      return;
     } else {
       words.forEach((item) => {
         // 알파벳이 같지 않은 개수
@@ -65,6 +65,7 @@ while문 + 내부 forEach 문
 VSC에서는 if(visited){ return; }이 필요 없는 코드로 떠서, 빼고 돌렸더니 답이 인정됐습니다.
 왜일까요..?
 
+복붙하는 과정에서 들여쓰기 실수를 해서 다시 commit 합니다..
 4. 참고 링크
 
 */
