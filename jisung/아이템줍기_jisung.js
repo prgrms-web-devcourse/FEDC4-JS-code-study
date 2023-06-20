@@ -1,4 +1,5 @@
 "use strict";
+
 function solution(rectangle, characterX, characterY, itemX, itemY) {
   let map = Array.from(Array(103).fill(0), () => Array(103).fill(0));
 
@@ -52,3 +53,10 @@ function solution(rectangle, characterX, characterY, itemX, itemY) {
     }
   }
 }
+/*
+
+1. 참고자료 
+- https://velog.io/@tnehd1998/%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%A8%B8%EC%8A%A4-%EC%95%84%EC%9D%B4%ED%85%9C-%EC%A4%8D%EA%B8%B0-JavaScript
+
+- 죄송합니다... 더 열심히 해볼게요.. 
+*/
