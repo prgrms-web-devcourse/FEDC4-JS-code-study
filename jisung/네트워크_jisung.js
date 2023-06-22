@@ -64,6 +64,7 @@ function solution(n, computers) {
 
 
 3. 기타 의견 
+사실 3단계 급은 아니라고 생각을 합니다! 
 저는 dfs함수에서 범위를 check해줬는데, 범위를 check하지 않는 방법도 생각해보고 있습니다. 
 
 
