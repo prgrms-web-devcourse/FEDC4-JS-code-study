@@ -15,18 +15,19 @@
 // 4. 중간에 나오는 영어는 신경 안 써줘도 되고,
 // - 그냥 ..이랑 /만 신경써주면 돼! 제발 신경ㄴ
 
-var simplifyPath = function (path) {
-  let stack = [];
+const simplifyPath = function (path) {
+  const stack = [];
 
   // 중간에 좀 필요없는 것들은 제거하기 위해서 filter를 사용
   // - 마지막에 들어있는 /
-  let pathArr = path.split("/").filter((path) => path !== "");
+  const pathArr = path.split("/").filter((path) => path !== "");
 
   for (let path of pathArr) {
     if (path === ".") {
       // .는 생략이 가능하다.
       continue;
-    } else if (path === "//") {
+    } else if (path === "..") {
+      // 수정을 못 해서 냈네요!! 죄송합니다ㅎㅎ
       stack.pop();
       //는 앞에 경로를 삭제해야해서, 이미 들어가있는 stack의 원소를 삭제
     } else {
@@ -39,7 +40,9 @@ var simplifyPath = function (path) {
   // 무조건 앞에 /가 와야하기 때문에 /를 해줬고,
   // split할 때 /를 없애줬으니 다시 합칠 땐 '/'를 해줘야한다.
 };
-
+console.log(simplifyPath("//home"));
+console.log(simplifyPath("/home/"));
+console.log(simplifyPath("//home/"));
 /*
 
 1. 알고리즘 or 자료구조 선택 이유
