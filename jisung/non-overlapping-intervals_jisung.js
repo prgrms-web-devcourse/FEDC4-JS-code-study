@@ -30,6 +30,11 @@ const eraseOverlapIntervals = function (intervals) {
 
 2. 시간 복잡도 or 결과
 sort함수를 사용했지만 n^2은 아니기 때문에, NlogN이다.
+Runtime
+262 ms
+
+Memory
+74 MB
 
 3. 기타 의견
 나름 괜찮은 문제였습니다! 
