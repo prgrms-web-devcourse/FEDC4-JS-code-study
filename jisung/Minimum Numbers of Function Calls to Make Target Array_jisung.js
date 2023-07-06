@@ -1,5 +1,5 @@
 /**
- * @param {number[]} nums
+ * @param {number[]} nums : 입력받는 배열
  * @return {number}
  */
 const checkNums = (nums) => {
