@@ -9,7 +9,7 @@
 - [이지윤](https://github.com/JIY00N2)
 - [정재희](https://github.com/oaoong)
 - [정태호](https://github.com/Jeong-Taeho)
-- [~~김지성~~](https://github.com/jisung24)
+
 
 # 🙏 목표
 
