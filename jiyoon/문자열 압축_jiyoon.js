@@ -31,7 +31,7 @@ function solution(s) {
         if (cnt === 1) {
           continue;
         }
-        temp.push(cnt);
+        temp.push(String(cnt));
         cnt = 1;
       }
     }
