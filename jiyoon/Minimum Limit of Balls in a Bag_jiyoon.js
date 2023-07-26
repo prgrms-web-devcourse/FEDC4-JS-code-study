@@ -42,11 +42,11 @@ const minimumSize = function (nums, maxOperations) {
 파라매트릭 서친
 
 2. 시간 복잡도 or 결과
-
-Runtime - ms %
-Memory - MB %
+Runtime - 240ms 15%
+Memory - 53.17MB 75%
 
 3. 기타 의견
+search 함수 부분은 gpt의 도움을 받았습니다 ㅜ
 
 4. 참고 링크
 
