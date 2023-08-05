@@ -1,3 +1,29 @@
+// 또 답 참고
+function solution(N, number) {
+  const MAX_COUNT = 8
+  const set = Array.from({ length: MAX_COUNT }, () => new Set())
+
+  for (let i = 0; i < MAX_COUNT; i++) {
+    set[i].add(Number(`${N}`.repeat(i + 1))) // 연속된 숫자 추가
+
+    for (let j = 0; j < i; j++) {
+      for (const arg1 of set[j]) {
+        for (const arg2 of set[i - j - 1]) {
+          set[i].add(arg1 + arg2)
+          set[i].add(arg1 - arg2)
+          set[i].add(arg1 * arg2)
+          set[i].add(Math.floor(arg1 / arg2))
+        }
+      }
+    }
+
+    if (set[i].has(number)) return i + 1
+  }
+  return -1
+}
+
+/* 
+예전 풀이
 function solution(N, number) {
 	const set = new Array(8).fill().map(() => new Set())
 	for (let i = 0; i < 8; i++) {
@@ -20,7 +46,7 @@ function solution(N, number) {
 	return -1
 }
 
-/* 2시간 투자했지만 쓰레기 풀이
+2시간 투자했지만 쓰레기 풀이
 function solution(N, number) {
 	if (N === number) return 1
 
@@ -92,9 +118,7 @@ DP 알고리즘
 -
 
 3. 기타 의견
-진짜 이 문제로 인해서 DP랑 영영 이별하고 싶네요.
-그냥 절대 답 모르겠어서 베꼈습니다.
-답 봐도 이해하고 싶지 않네요 ...................^^
+또 이해가 불가능했습니다.
 
 
 4. 참고 링크
