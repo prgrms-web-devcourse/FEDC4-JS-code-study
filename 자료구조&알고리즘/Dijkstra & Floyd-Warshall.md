@@ -58,227 +58,170 @@
 
 #### 2-2 구현 방법
 
-인접행렬 or 인접 리스트로 가능하다.
+인접행렬 or 인접 리스트로 가능하다. <br>
+[상세 구현 방법](https://gyyeom.tistory.com/117)
 
-**1. 간단한 다익스트라 알고리즘**
+예제 [백준 최단경로](https://www.acmicpc.net/problem/1753)
 
-> 시간복잡도 O(n)
+1. 문제
+   > 방향그래프가 주어지면 주어진 시작점에서 다른 모든 정점으로의 최단 경로를 구하는 프로그램을 작성하시오.<br> 단, 모든 간선의 가중치는 10 이하의 자연수이다.
+2. 입력
+   > 첫째 줄에 정점의 개수 V와 간선의 개수 E가 주어진다. (1 ≤ V ≤ 20,000, 1 ≤ E ≤ 300,000)<br> 모든 정점에는 1부터 V까지 번호가 매겨져 있다고 가정한다.<br> 둘째 줄에는 시작 정점의 번호 K(1 ≤ K ≤ V)가 주어진다.<br> 셋째 줄부터 E개의 줄에 걸쳐 각 간선을 나타내는 세 개의 정수 (u, v, w)가 순서대로 주어진다.<br> 이는 u에서 v로 가는 가중치 w인 간선이 존재한다는 뜻이다.<br> u와 v는 서로 다르며 w는 10 이하의 자연수이다.<br> 서로 다른 두 정점 사이에 여러 개의 간선이 존재할 수도 있음에 유의한다.
+3. 출력
+   > 첫째 줄부터 V개의 줄에 걸쳐, i번째 줄에 i번 정점으로의 최단 경로의 경로값을 출력한다. <br>시작점 자신은 0으로 출력하고, 경로가 존재하지 않는 경우에는 INF를 출력하면 된다.<br>
+4. 예제 입력1
+   > 5 6<br>
+   > 1<br>
+   > 5 1 1<br>
+   > 1 2 2<br>
+   > 1 3 3<br>
+   > 2 3 4<br>
+   > 2 4 5<br>
+   > 3 4 6<br>
+5. 예제 출력
+   > 0<br>
+   > 2<br>
+   > 3<br>
+   > 7<br>
+   > INF
 
-```js
-const fs = require('fs');
-let input = fs.readFileSync('../tc.txt').toString().trim().split('\n');
-
-let [nm, s, ...rest] = input;
-const [n, m] = nm.split(' ').map((v) => +v);
-const start = +s;
-const arr = rest.map((str) => str.split(' ').map((v) => +v));
-
-let visited = [...Array(n + 1).fill(false)];
-let d = [...Array(n + 1).fill(Infinity)];
-
-function solution(n, m, start, arr) {
-  //초기화
-  const graph = Array.from(Array(n + 1), () => []);
-  for (const v of arr) {
-    const [a, b, c] = v;
-    graph[a].push([b, c]);
-  }
-
-  //방문하지 않은 노드에서 최단 거리가 가장 짧은 노드의 인덱스 반환
-  const getSmallestNode = () => {
-    let min = Infinity;
-    let index = 0;
-    for (const i in d) {
-      if (!visited[i] && min > d[i]) {
-        min = d[i];
-        index = i;
-      }
-    }
-    return index;
-  };
-
-  const dijkstra = (start) => {
-    //시작 노드 초기화
-    d[start] = 0;
-    visited[start] = true;
-    for (const i of graph[start]) {
-      const [node, cost] = i;
-      d[node] = cost;
-    }
-
-    //시작 노드를 제외한 전체 노드에 대해 반복
-    for (let i = 0; i < n; i++) {
-      const cur = +getSmallestNode();
-      visited[cur] = true;
-
-      for (const j of graph[cur]) {
-        const node = j[0];
-        const cost = d[cur] + j[1];
-        if (cost < d[node]) {
-          d[node] = cost;
-        }
-      }
-    }
-  };
-
-  dijkstra(start);
-
-  for (let i = 1; i <= n; i++) {
-    if (d[i] === Infinity) {
-      console.log('INFINITY');
-    } else {
-      console.log(d[i]);
-    }
-  }
-
-  return d;
-}
-
-console.log(solution(n, m, start, arr));
-```
-
-**2. 개선된 다익스트라 알고리즘**
-
-> 최소힙으로 구현한 우선순위 큐 활용, 시간복잡도 O(nlogn), visited불필요
+[풀이](https://velog.io/@ywc8851/%EB%B0%B1%EC%A4%80-1753-%EC%B5%9C%EB%8B%A8%EA%B2%BD%EB%A1%9C-javascript)
 
 ```js
 const fs = require('fs');
-let input = fs.readFileSync('../tc.txt').toString().trim().split('\n');
+const filePath = process.platform === 'linux' ? '/dev/stdin' : 'input.txt';
+let input = fs.readFileSync(filePath).toString().trim().split('\n');
 
-let [nm, s, ...rest] = input;
-const [n, m] = nm.split(' ').map((v) => +v);
-const start = +s;
-const arr = rest.map((str) => str.split(' ').map((v) => +v));
-
-let d = [...Array(n + 1).fill(Infinity)];
-
-function solution(n, m, start, arr) {
-  const graph = Array.from(Array(n + 1), () => []);
-  for (const v of arr) {
-    const [a, b, c] = v;
-    graph[a].push([b, c]);
-  }
-
-  const dijkstra = (start) => {
-    //시작 노드 초기화
-    const pq = new PriorityQueue();
-    pq.push([0, start]); //[거리, 노드]
-    d[start] = 0;
-
-    while (!pq.empty()) {
-      const [dist, cur] = pq.pop(); //현재 최단 거리가 가장 짧은 노드
-
-      //최단 거리가 아닌 경우(방문한 적이 있는 경우) 스킵
-      if (d[cur] < dist) continue;
-
-      for (const i of graph[cur]) {
-        //인접 노드 탐색
-        const node = i[0];
-        const cost = dist + i[1];
-        if (cost < d[node]) {
-          pq.push([cost, node]);
-          d[node] = cost;
-        }
-      }
-    }
-  };
-
-  dijkstra(start);
-
-  for (let i = 1; i <= n; i++) {
-    if (d[i] === Infinity) {
-      console.log('INFINITY');
-    } else {
-      console.log(d[i]);
-    }
-  }
-
-  return d;
-}
-
-console.log(solution(n, m, start, arr));
-```
-
-**2-2. 우선순위 큐 구현(최소힙)**
-
-```js
-class PriorityQueue {
+class minHeap {
+  heapArray = [];
   constructor() {
-    this.heap = [];
-  }
-
-  empty() {
-    return this.heap.length === 0;
-  }
-
-  peek() {
-    return this.heap[0];
+    this.heapArray.push(null);
   }
 
   push(data) {
-    this.heap.push(data);
+    if (this.heapArray === null) {
+      this.heapArray = [];
+      this.heapArray.push(null);
+      this.heapArray.push(data);
+    } else {
+      this.heapArray.push(data);
+      let inserted_idx = this.heapArray.length - 1;
+      let parent_idx = parseInt(inserted_idx / 2);
+      while (inserted_idx > 1) {
+        if (this.heapArray[inserted_idx][1] < this.heapArray[parent_idx][1]) {
+          const tmp = this.heapArray[inserted_idx];
+          this.heapArray[inserted_idx] = this.heapArray[parent_idx];
+          this.heapArray[parent_idx] = tmp;
+          inserted_idx = parent_idx;
+          parent_idx = parseInt(parent_idx / 2);
+        } else {
+          break;
+        }
+      }
+    }
+  }
+  move_down(pop_idx) {
+    const left_child = pop_idx * 2;
+    const right_child = pop_idx * 2 + 1;
 
-    let i = this.heap.length - 1;
-    while (i > 0) {
-      const parent = ~~((i - 1) / 2);
-      if (this.heap[parent] <= this.heap[i]) break;
-      [this.heap[i], this.heap[parent]] = [this.heap[parent], this.heap[i]];
-      i = parent;
+    if (left_child >= this.heapArray.length) {
+      return false;
+    } else if (right_child >= this.heapArray.length) {
+      if (this.heapArray[pop_idx][1] > this.heapArray[left_child][1]) {
+        return true;
+      }
+      return false;
+    } else {
+      if (this.heapArray[left_child][1] < this.heapArray[right_child][1]) {
+        if (this.heapArray[pop_idx][1] > this.heapArray[left_child][1]) {
+          return true;
+        }
+        return false;
+      } else {
+        if (this.heapArray[pop_idx][1] > this.heapArray[right_child][1]) {
+          return true;
+        }
+        return false;
+      }
     }
   }
 
   pop() {
-    if (this.empty()) return;
-
-    const value = this.peek();
-    [this.heap[0], this.heap[this.heap.length - 1]] = [
-      this.heap[this.heap.length - 1],
-      this.heap[0],
-    ];
-    this.heap.pop();
-    this._heapify();
-    return value;
-  }
-
-  _heapify() {
-    const x = this.peek();
-    const n = this.heap.length;
-    let cur = 0;
-
-    while (2 * cur + 1 < n) {
-      const leftChild = 2 * cur + 1;
-      const rightChild = leftChild + 1;
-      const smallerChild =
-        rightChild < n && this.heap[rightChild] < this.heap[leftChild]
-          ? rightChild
-          : leftChild;
-
-      //루트 노드의 값이 더 큰 경우 swap
-      if (x > this.heap[smallerChild]) {
-        [this.heap[cur], this.heap[smallerChild]] = [
-          this.heap[smallerChild],
-          this.heap[cur],
-        ];
-        cur = smallerChild;
-      } else {
-        break;
+    if (this.heapArray === null) {
+      return null;
+    } else {
+      const return_data = this.heapArray[1];
+      this.heapArray[1] = this.heapArray[this.heapArray.length - 1];
+      this.heapArray.pop();
+      let popped_idx = 1;
+      while (this.move_down(popped_idx)) {
+        const left_child = popped_idx * 2;
+        const right_child = popped_idx * 2 + 1;
+        if (right_child >= this.heapArray.length) {
+          if (this.heapArray[popped_idx][1] > this.heapArray[left_child][1]) {
+            const tmp = this.heapArray[popped_idx];
+            this.heapArray[popped_idx] = this.heapArray[left_child];
+            this.heapArray[left_child] = tmp;
+            popped_idx = left_child;
+          }
+        } else {
+          if (this.heapArray[left_child][1] < this.heapArray[right_child][1]) {
+            if (this.heapArray[popped_idx][1] > this.heapArray[left_child][1]) {
+              const tmp = this.heapArray[popped_idx];
+              this.heapArray[popped_idx] = this.heapArray[left_child];
+              this.heapArray[left_child] = tmp;
+              popped_idx = left_child;
+            }
+          } else {
+            if (
+              this.heapArray[popped_idx][1] > this.heapArray[right_child][1]
+            ) {
+              const tmp = this.heapArray[popped_idx];
+              this.heapArray[popped_idx] = this.heapArray[right_child];
+              this.heapArray[right_child] = tmp;
+              popped_idx = right_child;
+            }
+          }
+        }
       }
+      return return_data;
     }
   }
 }
 
-const pq = new PriorityQueue();
-pq.push(3);
-pq.push(5);
-pq.push(2);
-pq.pop();
-pq.push(6);
-pq.push(1);
-pq.pop();
+const [v, e] = input.shift().split(' ').map(Number);
+const start = +input.shift();
+const graph = Array.from({ length: v + 1 }, () => []);
+const distance = Array.from({ length: v + 1 }, () => Infinity);
+const visited = Array.from({ length: v + 1 }, () => false);
+const pq = new minHeap();
 
-while (!pq.empty()) {
-  console.log(pq.pop());
+input.forEach((i) => {
+  const [from, to, weight] = i.split(' ').map(Number);
+  graph[from].push([to, weight]);
+});
 
+distance[start] = 0;
+pq.push([start, 0]);
+
+while (pq.heapArray.length > 1) {
+  const [curNode, dist] = pq.pop();
+  if (visited[curNode]) continue;
+
+  visited[curNode] = true;
+  for (let [nextNode, nextDistance] of graph[curNode]) {
+    if (distance[nextNode] > distance[curNode] + nextDistance) {
+      distance[nextNode] = nextDistance + distance[curNode];
+      pq.push([nextNode, distance[nextNode]]);
+    }
+  }
+}
+console.log(
+  distance
+    .map((i) => (i === Infinity ? 'INF' : i))
+    .slice(1)
+    .join('\n')
+);
 ```
 
 ### 3. 최단거리 관련 알고리즘
@@ -303,50 +246,87 @@ while (!pq.empty()) {
 
 #### 2-2 구현 방법
 
+[상세 구현 방법](https://gyyeom.tistory.com/117)
+
+예제 [백준 플로이드](https://www.acmicpc.net/problem/11404)
+
+1. 문제
+   > n(2 ≤ n ≤ 100)개의 도시가 있다.<br> 그리고 한 도시에서 출발하여 다른 도시에 도착하는 m(1 ≤ m ≤ 100,000)개의 버스가 있다. <br>각 버스는 한 번 사용할 때 필요한 비용이 있다.<br>
+   > 모든 도시의 쌍 (A, B)에 대해서 도시 A에서 B로 가는데 필요한 비용의 최솟값을 구하는 프로그램을 작성하시오.
+2. 입력
+   > 첫째 줄에 도시의 개수 n이 주어지고 둘째 줄에는 버스의 개수 m이 주어진다.<br> 그리고 셋째 줄부터 m+2줄까지 다음과 같은 버스의 정보가 주어진다. <br>먼저 처음에는 그 버스의 출발 도시의 번호가 주어진다. <br>버스의 정보는 버스의 시작 도시 a, 도착 도시 b, 한 번 타는데 필요한 비용 c로 이루어져 있다. <br>시작 도시와 도착 도시가 같은 경우는 없다.<br> 비용은 100,000보다 작거나 같은 자연수이다.<br>
+   > 시작 도시와 도착 도시를 연결하는 노선은 하나가 아닐 수 있다.
+3. 출력
+
+   > n개의 줄을 출력해야 한다.<br> i번째 줄에 출력하는 j번째 숫자는 도시 i에서 j로 가는데 필요한 최소 비용이다.<br> 만약, i에서 j로 갈 수 없는 경우에는 그 자리에 0을 출력한다.<br>
+
+4. 예제 입력1
+
+   > 5<br>
+   > 14<br>
+   > 1 2 2<br>
+   > 1 3 3<br>
+   > 1 4 1<br>
+   > 1 5 10<br>
+   > 2 4 2<br>
+   > 3 4 1<br>
+   > 3 5 1<br>
+   > 4 5 3<br>
+   > 3 5 10<br>
+   > 3 1 8<br>
+   > 1 4 2<br>
+   > 5 1 7<br>
+   > 3 4 2<br>
+   > 5 2 4v
+
+5. 예제 출력
+   > 0 2 3 1 4<br>
+   > 12 0 15 2 5<br>
+   > 8 5 0 1 1<br>
+   > 10 7 13 0 3<br>
+   > 7 4 10 6 0<br>
+
+[풀이](https://velog.io/@ywc8851/%EB%B0%B1%EC%A4%80-1753-%EC%B5%9C%EB%8B%A8%EA%B2%BD%EB%A1%9C-javascript)
+
 ```js
 const fs = require('fs');
-let input = fs.readFileSync('../tc.txt').toString().trim().split('\n');
+const filePath = process.platform === 'linux' ? '/dev/stdin' : 'input.txt';
+const input = fs.readFileSync(filePath).toString().trim().split('\n');
 
-let [n, m, ...rest] = input;
-(n = +n), (m = +m);
-const arr = rest.map((str) => str.split(' ').map((v) => +v));
+const [n, m, ...arr] = input;
+const busInfo = arr.map((a) => a.split(' ').map(Number));
+const dist = Array.from({ length: +n + 1 }, () =>
+  Array.from({ length: +n + 1 }, () => Infinity)
+);
 
-function solution(n, m, arr) {
-  //최단 거리 테이블 초기화
-  let d = Array.from(Array(n + 1), () => Array(n + 1).fill(Infinity));
-  for (let i = 1; i <= n; i++) d[i][i] = 0;
-  for (const value of arr) {
-    const [u, v, cost] = value;
-    d[u][v] = cost;
-  }
+busInfo.forEach(
+  (bus) => (dist[bus[0]][bus[1]] = Math.min(bus[2], dist[bus[0]][bus[1]]))
+);
 
-  //모든 노드에 대해 반복
-  for (let k = 1; k <= n; k++) {
-    //최단 거리 갱신
-    for (let from = 1; from <= n; from++) {
-      for (let to = 1; to <= n; to++) {
-        if (k === from || from === to) continue; //생략 가능
-        d[from][to] = Math.min(d[from][to], d[from][k] + d[k][to]);
+for (let k = 1; k < +n + 1; k++) {
+  for (let i = 1; i < +n + 1; i++) {
+    for (let j = 1; j < +n + 1; j++) {
+      if (dist[i][k] + dist[k][j] < dist[i][j] && i !== j) {
+        dist[i][j] = dist[i][k] + dist[k][j];
       }
     }
   }
-
-  let ans = '';
-  for (let from = 1; from <= n; from++) {
-    for (let to = 1; to <= n; to++) {
-      if (d[from][to] === Infinity) ans += 'INFINITY';
-      else ans += `${d[from][to]} `;
-    }
-    ans += '\n';
-  }
-
-  return ans;
 }
 
-console.log(solution(n, m, arr));
+for (let i = 1; i < +n + 1; i++) {
+  for (let j = 1; j < +n + 1; j++) {
+    if (dist[i][j] === Infinity) dist[i][j] = 0;
+  }
+}
+
+dist.slice(1).map((t) => {
+  console.log(t.slice(1).join(' '));
+});
 ```
 
 ✅ 참고자료<br>
 [다익스트라 알고리즘](https://youngju-js.tistory.com/5)<br>
 [다익스트라 & 플로이드 워셜 구현](https://gyyeom.tistory.com/117)<br>
-[플로이드 워셜 알고리즘](https://youngju-js.tistory.com/8?category=1040168)
+[플로이드 워셜 알고리즘](https://youngju-js.tistory.com/8?category=1040168)<br>
+[백준 다익스트라 풀이](https://velog.io/@ywc8851/%EB%B0%B1%EC%A4%80-1753-%EC%B5%9C%EB%8B%A8%EA%B2%BD%EB%A1%9C-javascript)
+[백준 플로이드 풀이](https://velog.io/@ywc8851/%EB%B0%B1%EC%A4%80-11404-%ED%94%8C%EB%A1%9C%EC%9D%B4%EB%93%9C-javascript)
