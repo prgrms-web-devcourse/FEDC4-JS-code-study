@@ -248,80 +248,56 @@ console.log(
 
 [상세 구현 방법](https://gyyeom.tistory.com/117)
 
-예제 [백준 플로이드](https://www.acmicpc.net/problem/11404)
+예제 [프로그래머스 순위](https://school.programmers.co.kr/learn/courses/30/lessons/49191)
 
 1. 문제
-   > n(2 ≤ n ≤ 100)개의 도시가 있다.<br> 그리고 한 도시에서 출발하여 다른 도시에 도착하는 m(1 ≤ m ≤ 100,000)개의 버스가 있다. <br>각 버스는 한 번 사용할 때 필요한 비용이 있다.<br>
-   > 모든 도시의 쌍 (A, B)에 대해서 도시 A에서 B로 가는데 필요한 비용의 최솟값을 구하는 프로그램을 작성하시오.
-2. 입력
-   > 첫째 줄에 도시의 개수 n이 주어지고 둘째 줄에는 버스의 개수 m이 주어진다.<br> 그리고 셋째 줄부터 m+2줄까지 다음과 같은 버스의 정보가 주어진다. <br>먼저 처음에는 그 버스의 출발 도시의 번호가 주어진다. <br>버스의 정보는 버스의 시작 도시 a, 도착 도시 b, 한 번 타는데 필요한 비용 c로 이루어져 있다. <br>시작 도시와 도착 도시가 같은 경우는 없다.<br> 비용은 100,000보다 작거나 같은 자연수이다.<br>
-   > 시작 도시와 도착 도시를 연결하는 노선은 하나가 아닐 수 있다.
-3. 출력
 
-   > n개의 줄을 출력해야 한다.<br> i번째 줄에 출력하는 j번째 숫자는 도시 i에서 j로 가는데 필요한 최소 비용이다.<br> 만약, i에서 j로 갈 수 없는 경우에는 그 자리에 0을 출력한다.<br>
+   > n명의 권투선수가 권투 대회에 참여했고 각각 1번부터 n번까지 번호를 받았습니다. <br>권투 경기는 1대1 방식으로 진행이 되고, 만약 A 선수가 B 선수보다 실력이 좋다면 A 선수는 B 선수를 항상 이깁니다. <br>심판은 주어진 경기 결과를 가지고 선수들의 순위를 매기려 합니다.<br> 하지만 몇몇 경기 결과를 분실하여 정확하게 순위를 매길 수 없습니다.<br>
+   > 선수의 수 n, 경기 결과를 담은 2차원 배열 results가 매개변수로 주어질 때 정확하게 순위를 매길 수 있는 선수의 수를 return 하도록 solution 함수를 작성해주세요.
 
-4. 예제 입력1
+2. 제한사항
 
-   > 5<br>
-   > 14<br>
-   > 1 2 2<br>
-   > 1 3 3<br>
-   > 1 4 1<br>
-   > 1 5 10<br>
-   > 2 4 2<br>
-   > 3 4 1<br>
-   > 3 5 1<br>
-   > 4 5 3<br>
-   > 3 5 10<br>
-   > 3 1 8<br>
-   > 1 4 2<br>
-   > 5 1 7<br>
-   > 3 4 2<br>
-   > 5 2 4v
+   > 선수의 수는 1명 이상 100명 이하입니다.<br>
+   > 경기 결과는 1개 이상 4,500개 이하입니다.<br>
+   > results 배열 각 행 [A, B]는 A 선수가 B 선수를 이겼다는 의미입니다.<br>
+   > 모든 경기 결과에는 모순이 없습니다.<br>
 
-5. 예제 출력
-   > 0 2 3 1 4<br>
-   > 12 0 15 2 5<br>
-   > 8 5 0 1 1<br>
-   > 10 7 13 0 3<br>
-   > 7 4 10 6 0<br>
+3. 입출력
+   > n:5<br>
+   > results: [[4, 3], [4, 2], [3, 2], [1, 2], [2, 5]]<br>
+   > return: 2<br>
 
-[풀이](https://velog.io/@ywc8851/%EB%B0%B1%EC%A4%80-1753-%EC%B5%9C%EB%8B%A8%EA%B2%BD%EB%A1%9C-javascript)
+[풀이](https://velog.io/@longroadhome/%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%A8%B8%EC%8A%A4-LV.3-%EC%88%9C%EC%9C%84-JS)
 
 ```js
-const fs = require('fs');
-const filePath = process.platform === 'linux' ? '/dev/stdin' : 'input.txt';
-const input = fs.readFileSync(filePath).toString().trim().split('\n');
+function solution(n, results) {
+  let answer = 0;
+  const dp = new Array(n).fill().map((_) => new Array(n).fill(false));
 
-const [n, m, ...arr] = input;
-const busInfo = arr.map((a) => a.split(' ').map(Number));
-const dist = Array.from({ length: +n + 1 }, () =>
-  Array.from({ length: +n + 1 }, () => Infinity)
-);
+  for (const res of results) {
+    dp[res[0] - 1][res[1] - 1] = true;
+  }
 
-busInfo.forEach(
-  (bus) => (dist[bus[0]][bus[1]] = Math.min(bus[2], dist[bus[0]][bus[1]]))
-);
-
-for (let k = 1; k < +n + 1; k++) {
-  for (let i = 1; i < +n + 1; i++) {
-    for (let j = 1; j < +n + 1; j++) {
-      if (dist[i][k] + dist[k][j] < dist[i][j] && i !== j) {
-        dist[i][j] = dist[i][k] + dist[k][j];
+  for (let k = 0; k < n; k++) {
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        if (dp[i][k] && dp[k][j]) {
+          dp[i][j] = true;
+        }
       }
     }
   }
-}
 
-for (let i = 1; i < +n + 1; i++) {
-  for (let j = 1; j < +n + 1; j++) {
-    if (dist[i][j] === Infinity) dist[i][j] = 0;
+  for (let i = 0; i < n; i++) {
+    let count = 0;
+    for (let j = 0; j < n; j++) {
+      if (dp[i][j] || dp[j][i]) count++;
+    }
+    if (count === n - 1) answer++;
   }
-}
 
-dist.slice(1).map((t) => {
-  console.log(t.slice(1).join(' '));
-});
+  return answer;
+}
 ```
 
 ✅ 참고자료<br>
@@ -329,4 +305,4 @@ dist.slice(1).map((t) => {
 [다익스트라 & 플로이드 워셜 구현](https://gyyeom.tistory.com/117)<br>
 [플로이드 워셜 알고리즘](https://youngju-js.tistory.com/8?category=1040168)<br>
 [백준 다익스트라 풀이](https://velog.io/@ywc8851/%EB%B0%B1%EC%A4%80-1753-%EC%B5%9C%EB%8B%A8%EA%B2%BD%EB%A1%9C-javascript)
-[백준 플로이드 풀이](https://velog.io/@ywc8851/%EB%B0%B1%EC%A4%80-11404-%ED%94%8C%EB%A1%9C%EC%9D%B4%EB%93%9C-javascript)
+[프로그래머스 순위 풀이](https://velog.io/@longroadhome/%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%A8%B8%EC%8A%A4-LV.3-%EC%88%9C%EC%9C%84-JS)
