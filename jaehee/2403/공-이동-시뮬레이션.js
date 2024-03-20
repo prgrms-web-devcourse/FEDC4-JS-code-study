@@ -122,6 +122,7 @@ function solution(n, m, x, y, queries) {
   }
 
   return (ne + 1 - ns) * (me + 1 - ms);
+  // return(BigInt(ne+1-ns)*BigInt(me+1-ms))
 }
 
 /*
@@ -166,6 +167,9 @@ function solution(n, m, x, y, queries) {
 
 3. 기타 의견 
 이진탐색을 사용해 풀었는데, 테케 2개가 통과 안된다ㅠㅠ
+
+1) 테케 2개가 틀린 이유는 답의 범위가 js 정수 범위를 넘어서였다. -> BigInt로 처리해주면 통과
+2) 애초에 이 방법보다는 정답에서부터 역순으로 처리하는게 더 간결하다.
 
 4. 참고 링크
 
